@@ -1,0 +1,36 @@
+- name: Install zsh
+  apt:
+    name: zsh
+    state: present
+  tags:
+    - zsh
+
+- name: Change shell to zsh for the user
+  user:
+    name: "{{ target_user }}"
+    shell: "{{ lookup('pipe', 'which zsh') }}"
+  tags:
+    - zsh
+
+- name: Install oh my zsh
+  become_user: "{{ target_user }}"
+  shell: sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --unattended"
+  tags:
+    - zsh
+
+- name: Install oh my zsh autosuggestions
+  become_user: "{{ target_user }}"
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions
+    dest: "/home/{{ target_user }}/.oh-my-zsh/plugins/zsh-autosuggestions"
+  tags:
+    - zsh
+
+- name: Update zshrc to include zsh-autosuggestions plugin
+  become_user: "{{ target_user }}"
+  lineinfile:
+    path: "/home/{{ target_user }}/.zshrc"
+    regexp: 'plugins=\(.*\)'
+    line: 'plugins=(git zsh-autosuggestions)'
+  tags:
+    - zsh

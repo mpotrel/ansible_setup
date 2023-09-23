@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  become: true
+  vars:
+    target_user: manu
+  pre_tasks:
+    - name: Update cache
+      apt:
+        update_cache: true
+      tags:
+        - zsh
+        - tmux
+        - nvim
+        - stow
+  tasks:
+  - import_tasks: tasks/zsh.yml
+  - import_tasks: tasks/tmux.yml
+  - import_tasks: tasks/nvim.yml
+  - import_tasks: tasks/stow.yml
